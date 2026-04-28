@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/filmil/bazel-go-basic",
+  "homepage": "https://github.com/filmil/bazel-wasm-demo",
   "maintainers": [
     {
       "name": "Filip Filmar",
@@ -9,10 +9,9 @@
     }
   ],
   "repository": [
-    "github:filmil/bazel-go-basic"
+    "github:filmil/bazel-wasm-demo"
   ],
   "versions": [
-    "0.35.0"
   ],
   "yanked_versions": {}
 }

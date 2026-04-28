@@ -15,19 +15,24 @@ mandates and workflows.
   - Build: `bazel build //...`
   - Test: `bazel test //...`
 
+
 ## Engineering Standards
 
 - **Error Handling:** Never ignore errors. Propagate them with context or log
   them explicitly.
 - **WASM:** Ensure targets are compatible with `js/wasm` where applicable.
+- Every ferature MUST have unit tests.
+- Large features MUST have integration tests.
 - After every feature implementation, build and run tests to verify
   functionality and prevent regressions.
+
 
 ## Workspace Conventions
 
 - Use "Conventional Commits 1.0.0" for commit messages.
 - Prefer rebase over merge: `git pull origin main --rebase`.
 - PRs should be created against the `main` branch.
+
 
 ## CI/CD
 

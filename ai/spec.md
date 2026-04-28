@@ -40,3 +40,12 @@ This file documents the iterative requests and modifications made to initialize 
   - Integrated `github.com/maxence-charriere/go-app/v9/pkg/app` into `server/main.go`.
   - Registered `app.Handler` to serve the WASM application.
   - Configured `wasm/BUILD.bazel` to target `js/wasm` for the client binary.
+  - Added a shared `ui` package to hold common UI components for both client and server.
+  - Added an integration test `server/server_test.go` to verify resource delivery (HTML, WASM, Icon, Favicon).
+
+## GitHub Workflows & BCR Configuration
+- **Request:** Adapt GitHub workflows and BCR configurations to match the project structure.
+- **Actions Taken:**
+  - Updated `tag-and-release.yml` to build and package the `//server:server` binary for multiple architectures.
+  - Adjusted `publish.yml` and `publish-bcr.yml` to point to `bazelbuild/bazel-central-registry` with the `filmil/bazel-central-registry` fork.
+  - Verified `.bcr/metadata.template.json` contains correct homepage and repository links.
