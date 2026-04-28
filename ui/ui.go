@@ -15,7 +15,8 @@ type Hello struct {
 }
 
 func (h *Hello) OnMount(ctx app.Context) {
-	h.client = api.NewGreeterHTTPClient("")
+	prefix := app.Getenv("GOAPP_PROXY_PATH")
+	h.client = api.NewGreeterHTTPClient(prefix)
 }
 
 func (h *Hello) getGreeting(ctx app.Context, e app.Event) {

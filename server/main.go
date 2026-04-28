@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/filmil/bazel-wasm-demo/protos/api"
 	"github.com/filmil/bazel-wasm-demo/ui"
@@ -18,7 +19,8 @@ import (
 var webAssets embed.FS
 
 var (
-	port = flag.Int("port", 8080, "default port to use")
+	port      = flag.Int("port", 8080, "default port to use")
+	proxyPath = flag.String("proxy-path", "", "The path prefix to use when served behind a proxy")
 )
 
 type server struct{}
@@ -66,10 +68,50 @@ func main() {
 	})
 
 	api.RegisterGreeterHTTPMux(mux, &server{})
-	mux.Handle("/", appHandler)
+	
+	// Use a dynamic app handler that responds to the prefix.
+	dynamicAppHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		prefix := *proxyPath
+		if prefix == "" {
+			prefix = r.Header.Get("X-Forwarded-Prefix")
+		}
+		if prefix == "" {
+			appHandler.ServeHTTP(w, r)
+			return
+		}
+		prefix = "/" + strings.Trim(prefix, "/")
+		hCopy := *appHandler
+		hCopy.Resources = app.PrefixedLocation(prefix)
+		if hCopy.Env == nil {
+			hCopy.Env = make(map[string]string)
+		}
+		hCopy.Env["GOAPP_PROXY_PATH"] = prefix
+		hCopy.ServeHTTP(w, r)
+	})
+	mux.Handle("/", dynamicAppHandler)
 
 	glog.Infof("Listening on http://localhost:%v", *port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%v", *port), mux); err != nil {
+	if *proxyPath != "" {
+		glog.Infof("Proxy path set to: %s", *proxyPath)
+	}
+
+	// The global proxy handler handles path stripping.
+	globalHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		prefix := *proxyPath
+		if prefix == "" {
+			prefix = r.Header.Get("X-Forwarded-Prefix")
+		}
+		if prefix != "" {
+			prefix = "/" + strings.Trim(prefix, "/")
+			if strings.HasPrefix(r.URL.Path, prefix) {
+				http.StripPrefix(prefix, mux).ServeHTTP(w, r)
+				return
+			}
+		}
+		mux.ServeHTTP(w, r)
+	})
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%v", *port), globalHandler); err != nil {
 		glog.Errorf("failed to serve: %v", err)
 		os.Exit(1)
 	}
