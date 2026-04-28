@@ -69,3 +69,11 @@ This file documents the iterative requests and modifications made to initialize 
   - Wrapped the `http.FileServer` and `/favicon.ico` routes with `glog.Infof` statements to log file requests.
   - Replaced `log.Fatalf` with `glog.Errorf` + `os.Exit(1)` per the project mandates in `GEMINI.md`.
   - Updated dependencies to include `github.com/golang/glog`.
+
+## OCI Container Build Rules
+- **Request:** Introduce OCI rules to build a container for the server binary.
+- **Actions Taken:**
+  - Updated `MODULE.bazel` to import `rules_oci` (v2.3.0) and `rules_pkg` (v1.2.0).
+  - Pulled `gcr.io/distroless/base-debian12` as the base image for the container via `oci.pull`.
+  - Added `pkg_tar`, `oci_image`, and `oci_load` targets in `server/BUILD.bazel` to package the `//server:server` executable inside an OCI container and output a loadable tarball archive.
+  - Tested the container configuration locally by building `//server:tarball`.
