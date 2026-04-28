@@ -39,6 +39,7 @@ func main() {
 	appHandler := &app.Handler{
 		Name:        "Hello WASM",
 		Description: "A simple Hello World WASM app",
+		Styles: []string{"/web/bootstrap.min.css"},
 		Icon: app.Icon{
 			Default: "/web/icon.png",
 		},

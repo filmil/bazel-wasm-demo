@@ -6,16 +6,19 @@ genrule(
         "//wasm",
         "//static:icon",
         "//static:favicon",
+        "//static:bootstrap_css",
     ],
     outs = [
         "web/app.wasm",
         "web/icon.png",
         "web/favicon.ico",
+        "web/bootstrap.min.css",
     ],
     cmd = """
     cp $(location //wasm) $(location web/app.wasm)
     cp $(location //static:icon) $(location web/icon.png)
     cp $(location //static:favicon) $(location web/favicon.ico)
+    cp $(location //static:bootstrap_css) $(location web/bootstrap.min.css)
     """,
 )
 
@@ -26,6 +29,7 @@ go_library(
         "web/app.wasm",
         "web/icon.png",
         "web/favicon.ico",
+        "web/bootstrap.min.css",
     ],
     importpath = "github.com/filmil/bazel-wasm-demo/server",
     visibility = ["//visibility:private"],

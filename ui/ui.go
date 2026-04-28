@@ -32,18 +32,35 @@ func (h *Hello) getGreeting(ctx app.Context, e app.Event) {
 }
 
 func (h *Hello) Render() app.UI {
-	return app.Div().Body(
-		app.H1().Text("WASM gRPC Demo"),
-		app.P().Body(
-			app.Input().
-				Type("text").
-				Value(h.name).
-				Placeholder("Enter your name").
-				OnChange(h.ValueTo(&h.name)),
-			app.Button().
-				Text("Say Hello").
-				OnClick(h.getGreeting),
+	return app.Div().Class("container mt-5").Body(
+		app.Div().Class("row justify-content-center").Body(
+			app.Div().Class("col-md-6").Body(
+				app.Div().Class("card shadow").Body(
+					app.Div().Class("card-header bg-primary text-white").Body(
+						app.H3().Class("card-title mb-0").Text("WASM gRPC Demo"),
+					),
+					app.Div().Class("card-body").Body(
+						app.Div().Class("mb-3").Body(
+							app.Label().Class("form-label").Text("Enter your name:"),
+							app.Input().
+								Class("form-control").
+								Type("text").
+								Value(h.name).
+								Placeholder("Name").
+								OnChange(h.ValueTo(&h.name)),
+						),
+						app.Button().
+							Class("btn btn-primary w-100").
+							Text("Say Hello").
+							OnClick(h.getGreeting),
+						app.If(h.message != "", func() app.UI {
+							return app.Div().Class("alert alert-success mt-3").Body(
+								app.Text(h.message),
+							)
+						}),
+					),
+				),
+			),
 		),
-		app.P().Text(h.message),
 	)
 }
