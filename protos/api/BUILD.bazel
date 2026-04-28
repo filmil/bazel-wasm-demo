@@ -1,0 +1,37 @@
+# gazelle:exclude api.pb.client.go
+# gazelle:exclude api.pb.server.go
+# gazelle:exclude api.pb.go
+# gazelle:exclude api_grpc.pb.go
+
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "api_proto",
+    srcs = ["api.proto"],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "api",
+    srcs = [
+        "api.client.go",
+        "api.server.go",
+    ],
+    embed = [":api_go_proto"],
+    importpath = "github.com/filmil/bazel-wasm-demo/protos/api",
+    visibility = ["//visibility:public"],
+)
+
+go_proto_library(
+    name = "api_go_proto",
+    compilers = [
+        "//tools:go_server",  #keep
+        "//tools:go_client",  #keep
+        "@rules_go//proto:go_grpc",
+    ],
+    importpath = "github.com/filmil/bazel-wasm-demo/protos/api",
+    proto = ":api_proto",
+    visibility = ["//visibility:public"],
+)

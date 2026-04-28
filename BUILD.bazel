@@ -1,0 +1,22 @@
+# gazelle:go_grpc_compilers @rules_go//proto:go_grpc
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+load("@gazelle//:def.bzl", "gazelle")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# gazelle:prefix github.com/filmil/bazel-wasm-demo
+gazelle(name = "gazelle")
+
+buildifier(
+    name = "buildifier.check",
+    exclude_patterns = [
+        "./.git/*",
+    ],
+    lint_mode = "warn",
+    mode = "diff",
+)
+
+sh_test(
+    name = "tbd",
+    size = "small",
+    srcs = ["test.bash"],
+)

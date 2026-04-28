@@ -1,0 +1,17 @@
+load("@rules_go//proto:compiler.bzl", "go_proto_compiler")
+
+go_proto_compiler(
+    name = "go_server",
+    plugin = "//tools/protoc-gen-server",
+    suffix = ".server.go",
+    valid_archive = False,
+    visibility = ["//visibility:public"],
+)
+
+go_proto_compiler(
+    name = "go_client",
+    plugin = "//tools/protoc-gen-client",
+    suffix = ".client.go",
+    valid_archive = False,
+    visibility = ["//visibility:public"],
+)

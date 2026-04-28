@@ -1,0 +1,20 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "wasm_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/filmil/bazel-wasm-demo/wasm",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//protos/api",
+        "@com_github_maxence_charriere_go_app_v9//pkg/app",
+    ],
+)
+
+go_binary(
+    name = "wasm",
+    embed = [":wasm_lib"],
+    goarch = "wasm",
+    goos = "js",
+    visibility = ["//visibility:public"],
+)
