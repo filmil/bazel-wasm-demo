@@ -9,13 +9,9 @@ name: Tag and Release
 
 env:
   # The env here is tailored to releasing *one* binary.
-  # ZIP_PACKAGE is the package where the zip target is. For //test in this
-  # example, the label of the bazel target that zips up a built and released
-  # binary is `//test:zip`.
-  ZIP_PACKAGE: "//test"
-  # The name of the binary to package. This workflow packages a single binary
-  # into a zip file.
-  BINARY_NAME: "bazel-bin/test/test"
+  ZIP_PACKAGE: "//server"
+  # The name of the binary to package.
+  BINARY_NAME: "bazel-bin/server/server_/server"
 
 on:
   schedule:
@@ -106,8 +102,10 @@ jobs:
         run: |
           bazel build \
             --platforms=@rules_go//go/toolchain:${{ matrix.os }}_${{ matrix.arch}} \
-            --${ZIP_PACKAGE}:name_part_from_command_line=${{ matrix.os }}-${{ matrix.arch }} \
-            ${ZIP_PACKAGE}:zip
+            //server:server
+      - name: "Zip binary for ${{ matrix.os }}_${{ matrix.arch }}"
+        run: |
+          zip -j "${{ env.BINARY_NAME }}-${{ matrix.os }}-${{ matrix.arch }}.zip" "${{ env.BINARY_NAME }}"
       - name: Find version tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
