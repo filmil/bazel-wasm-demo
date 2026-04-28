@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	wasmLoc = flag.String("wasm-path", "", "path to the web app wasm file")
-	iconLoc = flag.String("icon-path", "", "path to the icon")
-	port    = flag.Int("port", 8080, "default port to use")
+	wasmLoc    = flag.String("wasm-path", "", "path to the web app wasm file")
+	iconLoc    = flag.String("icon-path", "", "path to the icon")
+	faviconLoc = flag.String("favicon-path", "", "path to the favicon")
+	port       = flag.Int("port", 8080, "default port to use")
 )
 
 type server struct{}
@@ -52,6 +53,11 @@ func main() {
 	if *iconLoc != "" {
 		mux.HandleFunc("/web/icon.png", func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFile(w, r, *iconLoc)
+		})
+	}
+	if *faviconLoc != "" {
+		mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, *faviconLoc)
 		})
 	}
 
