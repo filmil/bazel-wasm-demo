@@ -9,3 +9,9 @@ filegroup(
     srcs = ["favicon.ico"],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+    name = "bootstrap_css",
+    srcs = ["bootstrap.min.css"],
+    visibility = ["//visibility:public"],
+)
