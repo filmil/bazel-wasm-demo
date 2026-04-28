@@ -1,6 +1,12 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load", "oci_push")
+load(":flag.bzl", "flag_to_file")
+
+flag_to_file(
+    name = "registry",
+    build_setting_default = "docker.io/filipfilmar/wasm-demo",
+)
 
 genrule(
     name = "copy_web_assets",
@@ -67,6 +73,14 @@ oci_load(
     name = "tarball",
     image = ":image",
     repo_tags = ["bazel-wasm-demo-server:latest"],
+    visibility = ["//visibility:public"],
+)
+
+oci_push(
+    name = "push",
+    image = ":image",
+    repository_file = ":registry",
+    remote_tags = ["latest"],
     visibility = ["//visibility:public"],
 )
 
