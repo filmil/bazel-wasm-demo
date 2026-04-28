@@ -28,6 +28,7 @@ func (s *server) SayHello(ctx context.Context, in *api.HelloRequest) (*api.Hello
 	if name == "" {
 		name = "World"
 	}
+	glog.Infof("SayHello called with name: %s", name)
 	return &api.HelloReply{Message: "Hello, " + name}, nil
 }
 
@@ -39,7 +40,7 @@ func main() {
 	appHandler := &app.Handler{
 		Name:        "Hello WASM",
 		Description: "A simple Hello World WASM app",
-		Styles: []string{"/web/bootstrap.min.css"},
+		Styles:      []string{"/web/bootstrap.min.css"},
 		Icon: app.Icon{
 			Default: "/web/icon.png",
 		},
