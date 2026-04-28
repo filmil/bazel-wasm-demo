@@ -1,0 +1,4 @@
+bazel-*
+local
+user.bazelrc
+

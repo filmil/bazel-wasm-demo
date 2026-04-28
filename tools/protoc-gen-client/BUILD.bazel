@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "protoc-gen-client_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/filmil/bazel-wasm-demo/tools/protoc-gen-client",
+    visibility = ["//visibility:private"],
+    deps = ["@org_golang_google_protobuf//compiler/protogen"],
+)
+
+go_binary(
+    name = "protoc-gen-client",
+    embed = [":protoc-gen-client_lib"],
+    visibility = ["//visibility:public"],
+)
