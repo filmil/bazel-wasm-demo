@@ -14,6 +14,8 @@ mandates and workflows.
   - Use `bazel mod tidy` to update `MODULE.bazel`.
   - Build: `bazel build //...`
   - Test: `bazel test //...`
+- **DO NOT** downgrade dependencies. If a downgrade is needed, stop and ask the
+  user for permission.
 
 
 ## Engineering Standards
