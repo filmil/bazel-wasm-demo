@@ -5,11 +5,12 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
+	"os"
 
 	"github.com/filmil/bazel-wasm-demo/protos/api"
 	"github.com/filmil/bazel-wasm-demo/ui"
+	"github.com/golang/glog"
 	"github.com/maxence-charriere/go-app/v10/pkg/app"
 )
 
@@ -45,9 +46,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/web/", http.FileServer(http.FS(webAssets)))
-	
+	fileServer := http.FileServer(http.FS(webAssets))
+	mux.HandleFunc("/web/", func(w http.ResponseWriter, r *http.Request) {
+		glog.Infof("Serving static web asset: %s", r.URL.Path)
+		fileServer.ServeHTTP(w, r)
+	})
+
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		glog.Infof("Serving file: /favicon.ico")
 		file, err := webAssets.ReadFile("web/favicon.ico")
 		if err != nil {
 			http.NotFound(w, r)
@@ -60,8 +66,9 @@ func main() {
 	api.RegisterGreeterHTTPMux(mux, &server{})
 	mux.Handle("/", appHandler)
 
-	log.Printf("Listening on http://localhost:%v\n", *port)
+	glog.Infof("Listening on http://localhost:%v", *port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%v", *port), mux); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		glog.Errorf("failed to serve: %v", err)
+		os.Exit(1)
 	}
 }
