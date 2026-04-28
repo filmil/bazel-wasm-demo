@@ -34,6 +34,7 @@ mandates and workflows.
 - Use "Conventional Commits 1.0.0" for commit messages.
 - Prefer rebase over merge: `git pull origin main --rebase`.
 - PRs should be created against the `main` branch.
+- Before creating PRs, rebase from main, and fix any conflicts.
 
 
 ## CI/CD
