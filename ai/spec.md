@@ -49,3 +49,9 @@ This file documents the iterative requests and modifications made to initialize 
   - Updated `tag-and-release.yml` to build and package the `//server:server` binary for multiple architectures.
   - Adjusted `publish.yml` and `publish-bcr.yml` to point to `bazelbuild/bazel-central-registry` with the `filmil/bazel-central-registry` fork.
   - Verified `.bcr/metadata.template.json` contains correct homepage and repository links.
+
+## Go-app v10 Upgrade
+- **Request:** Update go-app version from v9 to v10.
+- **Actions Taken:**
+  - Replaced all imports and build references of `go-app/v9` with `go-app/v10`.
+  - Adjusted `app.Route` calls to use the factory function signature introduced in v10.
