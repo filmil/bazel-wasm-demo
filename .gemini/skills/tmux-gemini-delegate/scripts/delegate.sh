@@ -38,3 +38,7 @@ tmux send-keys -t "$WINDOW_ID" "$COMMAND" Enter
 echo "✅ Successfully delegated feature '$TOPIC' to new tmux window $WINDOW_ID."
 echo "   Branch: $BRANCH_NAME"
 echo "   Worktree: $WORKTREE_PATH"
+echo "   "
+echo "   ACTION REQUIRED: You MUST monitor the progress of this delegate."
+echo "   Use the following command to check its status periodically:"
+echo "   tmux capture-pane -p -t \"$WINDOW_ID\""

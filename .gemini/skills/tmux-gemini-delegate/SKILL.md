@@ -3,7 +3,8 @@ name: tmux-gemini-delegate
 description: >
   Delegate a new feature implementation to a fresh Gemini CLI instance in a new
   tmux window using a dedicated git worktree and branch. Use when you want to
-  parallelize work or isolate a complex feature implementation.
+  parallelize work or isolate a complex feature implementation. You MUST track
+  the status of the delegated agent until completion.
 ---
 
 # Tmux Gemini Delegate
@@ -19,6 +20,9 @@ specific feature request in a new git worktree.
     agent should implement.
 3.  **Delegate**: Execute the bundled script to create a new tmux window and
     start the new agent.
+4.  **Track Status**: You MUST monitor the progress of the delegated agent.
+    Periodically check its output using `tmux capture-pane -p -t <window_id>`
+    until the delegated instance finishes its task (e.g., creates the PR and exits).
 
 ## Script Usage
 
@@ -41,4 +45,6 @@ The script performs the following actions:
 
 ```bash
 bash tmux-gemini-delegate/scripts/delegate.sh bootstrap-ui "Prettify the UI using Bootstrap 5"
+# Then monitor the progress
+tmux capture-pane -p -t @<window_id>
 ```
