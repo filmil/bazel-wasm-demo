@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "server_lib",
@@ -7,12 +7,39 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//protos/api",
+        "//ui",
         "@com_github_maxence_charriere_go_app_v9//pkg/app",
     ],
 )
 
 go_binary(
     name = "server",
+    args = [
+        "--wasm-path",
+        "$(location //wasm)",
+        "--icon-path",
+        "$(location //static:icon)",
+    ],
+    data = [
+        "//static:icon",
+        "//wasm",
+    ],
     embed = [":server_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "server_test",
+    srcs = ["server_test.go"],
+    data = [
+        ":server",
+        "//static:icon",
+        "//wasm",
+    ],
+    env = {
+        "SERVER_BIN": "$(location :server)",
+        "WASM_LOC": "$(location //wasm)",
+        "ICON_LOC": "$(location //static:icon)",
+    },
+    deps = ["@rules_go//go/tools/bazel"],
 )

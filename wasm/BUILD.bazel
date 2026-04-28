@@ -6,7 +6,7 @@ go_library(
     importpath = "github.com/filmil/bazel-wasm-demo/wasm",
     visibility = ["//visibility:private"],
     deps = [
-        "//protos/api",
+        "//ui",
         "@com_github_maxence_charriere_go_app_v9//pkg/app",
     ],
 )

@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ui",
+    srcs = ["ui.go"],
+    importpath = "github.com/filmil/bazel-wasm-demo/ui",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//protos/api",
+        "@com_github_maxence_charriere_go_app_v9//pkg/app",
+    ],
+)
