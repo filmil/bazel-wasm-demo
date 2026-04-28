@@ -37,7 +37,7 @@ This file documents the iterative requests and modifications made to initialize 
 ## Go-app Application Integration
 - **Request:** Register a serving API for a go-app application wasm.
 - **Actions Taken:**
-  - Integrated `github.com/maxence-charriere/go-app/v9/pkg/app` into `server/main.go`.
+  - Integrated `github.com/maxence-charriere/go-app/v10/pkg/app` into `server/main.go`.
   - Registered `app.Handler` to serve the WASM application.
   - Configured `wasm/BUILD.bazel` to target `js/wasm` for the client binary.
   - Added a shared `ui` package to hold common UI components for both client and server.

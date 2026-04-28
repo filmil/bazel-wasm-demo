@@ -164,8 +164,8 @@ def go_repositories():
         version = "v0.6.2",
     )
     go_repository(
-        name = "com_github_maxence_charriere_go_app_v9",
-        importpath = "github.com/maxence-charriere/go-app/v9",
+        name = "com_github_maxence_charriere_go_app_v10",
+        importpath = "github.com/maxence-charriere/go-app/v10",
         sum = "h1:rDfLNvxIKXyjpRS76P45kn9Xj8IumwfoqpsEJYxfd+E=",
         version = "v9.8.0",
     )
