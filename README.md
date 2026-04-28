@@ -2,6 +2,8 @@
 
 [![Test](https://github.com/filmil/bazel-wasm-demo/actions/workflows/test.yml/badge.svg)](https://github.com/filmil/bazel-wasm-demo/actions/workflows/test.yml)
 [![Publish BCR](https://github.com/filmil/bazel-wasm-demo/actions/workflows/publish-bcr.yml/badge.svg)](https://github.com/filmil/bazel-wasm-demo/actions/workflows/publish-bcr.yml)
+[![Publish](https://github.com/filmil/bazel-wasm-demo/actions/workflows/publish.yml/badge.svg)](https://github.com/filmil/bazel-wasm-demo/actions/workflows/publish.yml)
+[![Tag and Release](https://github.com/filmil/bazel-wasm-demo/actions/workflows/tag-and-release.yml/badge.svg)](https://github.com/filmil/bazel-wasm-demo/actions/workflows/tag-and-release.yml)
 
 
 An example Bazel-managed Go WASM web application using gRPC for API definitions.
