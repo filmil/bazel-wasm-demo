@@ -62,3 +62,10 @@ This file documents the iterative requests and modifications made to initialize 
   - Employed `//go:embed web/*` in `server/main.go` to bundle the assets natively via `embed.FS`.
   - Adjusted the `go-app` HTTP routing to serve the embedded files directly via `http.FileServer(http.FS(webAssets))`.
   - Removed command-line asset path flags, streamlining server execution and tests.
+
+## Server File Serving Logging
+- **Request:** Add logging in the server-side code wherever a file is being served.
+- **Actions Taken:**
+  - Wrapped the `http.FileServer` and `/favicon.ico` routes with `glog.Infof` statements to log file requests.
+  - Replaced `log.Fatalf` with `glog.Errorf` + `os.Exit(1)` per the project mandates in `GEMINI.md`.
+  - Updated dependencies to include `github.com/golang/glog`.
