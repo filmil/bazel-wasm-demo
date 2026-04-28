@@ -3,6 +3,7 @@
 This project is a Bazel-managed Go WASM application. Adhere to the following
 mandates and workflows.
 
+
 ## Build System & Toolchain
 
 - **Build System:** Bazel (version `9.0.1`).
@@ -18,6 +19,14 @@ mandates and workflows.
   user for permission.
 
 
+## Source control guidance
+
+- Prefer rebase over merge: `git pull origin main --rebase`.
+- PRs should be created against the `main` branch.
+- Before creating PRs, rebase from main, and fix any conflicts.
+- When resolving conflicts, use the `--no-edit` git option to prevent
+  interactive editor invocations.
+
 ## Engineering Standards
 
 - **Error Handling:** Never ignore errors. Propagate them with context or log
@@ -32,9 +41,6 @@ mandates and workflows.
 ## Workspace Conventions
 
 - Use "Conventional Commits 1.0.0" for commit messages.
-- Prefer rebase over merge: `git pull origin main --rebase`.
-- PRs should be created against the `main` branch.
-- Before creating PRs, rebase from main, and fix any conflicts.
 
 
 ## CI/CD
