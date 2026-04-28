@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Delegate a feature request to a new Gemini instance in a tmux pane.
+# Delegate a feature request to a new Gemini instance in a tmux window.
 
 TOPIC=$1
 DESCRIPTION=$2
@@ -24,17 +24,17 @@ WORKTREE_PATH="../$TOPIC"
 # The command to send to the new Gemini instance
 COMMAND="gemini \"in a new git worktree at $WORKTREE_PATH, checkout a new branch $BRANCH_NAME from origin/main. Implement a new feature: $DESCRIPTION. When done, create and send a PR.\""
 
-# Split the window and get the new pane ID
-PANE_ID=$(tmux split-window -h -d -P -F "#{pane_id}")
+# Create a new window and get the new window ID
+WINDOW_ID=$(tmux new-window -d -P -F "#{window_id}")
 
-if [ -z "$PANE_ID" ]; then
-  echo "Error: Failed to split tmux window."
+if [ -z "$WINDOW_ID" ]; then
+  echo "Error: Failed to create new tmux window."
   exit 1
 fi
 
-# Send the command to the new pane
-tmux send-keys -t "$PANE_ID" "$COMMAND" Enter
+# Send the command to the new window
+tmux send-keys -t "$WINDOW_ID" "$COMMAND" Enter
 
-echo "✅ Successfully delegated feature '$TOPIC' to new tmux pane $PANE_ID."
+echo "✅ Successfully delegated feature '$TOPIC' to new tmux window $WINDOW_ID."
 echo "   Branch: $BRANCH_NAME"
 echo "   Worktree: $WORKTREE_PATH"
