@@ -1,8 +1,32 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
+genrule(
+    name = "copy_web_assets",
+    srcs = [
+        "//wasm",
+        "//static:icon",
+        "//static:favicon",
+    ],
+    outs = [
+        "web/app.wasm",
+        "web/icon.png",
+        "web/favicon.ico",
+    ],
+    cmd = """
+    cp $(location //wasm) $(location web/app.wasm)
+    cp $(location //static:icon) $(location web/icon.png)
+    cp $(location //static:favicon) $(location web/favicon.ico)
+    """,
+)
+
 go_library(
     name = "server_lib",
     srcs = ["main.go"],
+    embedsrcs = [
+        "web/app.wasm",
+        "web/icon.png",
+        "web/favicon.ico",
+    ],
     importpath = "github.com/filmil/bazel-wasm-demo/server",
     visibility = ["//visibility:private"],
     deps = [
@@ -14,19 +38,6 @@ go_library(
 
 go_binary(
     name = "server",
-    args = [
-        "--wasm-path",
-        "$(location //wasm)",
-        "--icon-path",
-        "--favicon-path",
-        "$(location //static:favicon)",
-        "$(location //static:icon)",
-    ],
-    data = [
-        "//static:icon",
-        "//static:favicon",
-        "//wasm",
-    ],
     embed = [":server_lib"],
     visibility = ["//visibility:public"],
 )
@@ -34,17 +45,9 @@ go_binary(
 go_test(
     name = "server_test",
     srcs = ["server_test.go"],
-    data = [
-        ":server",
-        "//static:icon",
-        "//static:favicon",
-        "//wasm",
-    ],
+    data = [":server"],
     env = {
         "SERVER_BIN": "$(location :server)",
-        "WASM_LOC": "$(location //wasm)",
-        "ICON_LOC": "$(location //static:icon)",
-        "FAVICON_LOC": "$(location //static:favicon)",
     },
     deps = ["@rules_go//go/tools/bazel"],
 )

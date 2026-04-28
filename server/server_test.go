@@ -19,18 +19,11 @@ func TestServerResources(t *testing.T) {
 		t.Skip("SERVER_BIN not set, skipping integration test")
 	}
 
-	wasmLoc, _ := bazel.Runfile(os.Getenv("WASM_LOC"))
-	iconLoc, _ := bazel.Runfile(os.Getenv("ICON_LOC"))
-	faviconLoc, _ := bazel.Runfile(os.Getenv("FAVICON_LOC"))
-
 	// Choose an ephemeral port
 	port := 8081
 
 	// Start the server
 	cmd := exec.Command(serverBin, 
-		"--wasm-path", wasmLoc,
-		"--icon-path", iconLoc,
-		"--favicon-path", faviconLoc,
 		"--port", fmt.Sprintf("%d", port),
 	)
 	cmd.Stdout = os.Stdout
