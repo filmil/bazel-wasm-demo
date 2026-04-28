@@ -77,3 +77,10 @@ This file documents the iterative requests and modifications made to initialize 
   - Pulled `gcr.io/distroless/base-debian12` as the base image for the container via `oci.pull`.
   - Added `pkg_tar`, `oci_image`, and `oci_load` targets in `server/BUILD.bazel` to package the `//server:server` executable inside an OCI container and output a loadable tarball archive.
   - Tested the container configuration locally by building `//server:tarball`.
+
+## OCI Container Push Rules
+- **Request:** Add a rule to push to `filipfilmar/wasm-demo` with a bazel flag to set the container name.
+- **Actions Taken:**
+  - Implemented a custom `flag_to_file` starlark rule in `server/flag.bzl` to securely write string build settings to a file.
+  - Added a `--//server:registry` bazel flag with a default of `docker.io/filipfilmar/wasm-demo`.
+  - Connected the generated flag file to the `repository_file` attribute of an `oci_push` rule (`//server:push`), enabling dynamically configured image pushing.
