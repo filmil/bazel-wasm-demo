@@ -32,6 +32,7 @@ go_library(
     deps = [
         "//protos/api",
         "//ui",
+        "@com_github_golang_glog//:glog",
         "@com_github_maxence_charriere_go_app_v10//pkg/app",
     ],
 )
