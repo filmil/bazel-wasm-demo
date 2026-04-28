@@ -20,6 +20,8 @@ mandates and workflows.
 - **Error Handling:** Never ignore errors. Propagate them with context or log
   them explicitly.
 - **WASM:** Ensure targets are compatible with `js/wasm` where applicable.
+- After every feature implementation, build and run tests to verify
+  functionality and prevent regressions.
 
 ## Workspace Conventions
 
