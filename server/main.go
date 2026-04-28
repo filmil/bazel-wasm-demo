@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"flag"
 	"fmt"
 	"log"
@@ -12,11 +13,11 @@ import (
 	"github.com/maxence-charriere/go-app/v10/pkg/app"
 )
 
+//go:embed web/*
+var webAssets embed.FS
+
 var (
-	wasmLoc    = flag.String("wasm-path", "", "path to the web app wasm file")
-	iconLoc    = flag.String("icon-path", "", "path to the icon")
-	faviconLoc = flag.String("favicon-path", "", "path to the favicon")
-	port       = flag.Int("port", 8080, "default port to use")
+	port = flag.Int("port", 8080, "default port to use")
 )
 
 type server struct{}
@@ -31,9 +32,6 @@ func (s *server) SayHello(ctx context.Context, in *api.HelloRequest) (*api.Hello
 
 func main() {
 	flag.Parse()
-	if *wasmLoc == "" {
-		log.Fatalf("The flag --wasm-path is required.")
-	}
 
 	app.Route("/", func() app.Composer { return &ui.Hello{} })
 
@@ -47,19 +45,17 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/web/app.wasm", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, *wasmLoc)
+	mux.Handle("/web/", http.FileServer(http.FS(webAssets)))
+	
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		file, err := webAssets.ReadFile("web/favicon.ico")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "image/x-icon")
+		w.Write(file)
 	})
-	if *iconLoc != "" {
-		mux.HandleFunc("/web/icon.png", func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, *iconLoc)
-		})
-	}
-	if *faviconLoc != "" {
-		mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, *faviconLoc)
-		})
-	}
 
 	api.RegisterGreeterHTTPMux(mux, &server{})
 	mux.Handle("/", appHandler)
@@ -69,4 +65,3 @@ func main() {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
-
