@@ -3,3 +3,9 @@ filegroup(
     srcs = ["icon.png"],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+    name = "favicon",
+    srcs = ["favicon.ico"],
+    visibility = ["//visibility:public"],
+)

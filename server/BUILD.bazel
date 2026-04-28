@@ -18,10 +18,13 @@ go_binary(
         "--wasm-path",
         "$(location //wasm)",
         "--icon-path",
+        "--favicon-path",
+        "$(location //static:favicon)",
         "$(location //static:icon)",
     ],
     data = [
         "//static:icon",
+        "//static:favicon",
         "//wasm",
     ],
     embed = [":server_lib"],
@@ -34,12 +37,14 @@ go_test(
     data = [
         ":server",
         "//static:icon",
+        "//static:favicon",
         "//wasm",
     ],
     env = {
         "SERVER_BIN": "$(location :server)",
         "WASM_LOC": "$(location //wasm)",
         "ICON_LOC": "$(location //static:icon)",
+        "FAVICON_LOC": "$(location //static:favicon)",
     },
     deps = ["@rules_go//go/tools/bazel"],
 )

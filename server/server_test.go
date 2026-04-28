@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"github.com/bazelbuild/rules_go/go/tools/bazel"
 	"testing"
 	"time"
+
+	"github.com/bazelbuild/rules_go/go/tools/bazel"
 )
 
 func TestServerResources(t *testing.T) {
@@ -20,6 +21,7 @@ func TestServerResources(t *testing.T) {
 
 	wasmLoc, _ := bazel.Runfile(os.Getenv("WASM_LOC"))
 	iconLoc, _ := bazel.Runfile(os.Getenv("ICON_LOC"))
+	faviconLoc, _ := bazel.Runfile(os.Getenv("FAVICON_LOC"))
 
 	// Choose an ephemeral port
 	port := 8081
@@ -28,6 +30,7 @@ func TestServerResources(t *testing.T) {
 	cmd := exec.Command(serverBin, 
 		"--wasm-path", wasmLoc,
 		"--icon-path", iconLoc,
+		"--favicon-path", faviconLoc,
 		"--port", fmt.Sprintf("%d", port),
 	)
 	cmd.Stdout = os.Stdout
@@ -72,6 +75,7 @@ func TestServerResources(t *testing.T) {
 		{"Root HTML", "/", http.StatusOK, 100},
 		{"WASM Binary", "/web/app.wasm", http.StatusOK, 1024 * 1024}, // Expecting >1MB for Go WASM
 		{"Icon", "/web/icon.png", http.StatusOK, 100},
+		{"Favicon", "/favicon.ico", http.StatusOK, 50},
 	}
 
 	for _, tc := range tests {
