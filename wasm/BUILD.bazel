@@ -7,7 +7,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//ui",
-        "@com_github_maxence_charriere_go_app_v9//pkg/app",
+        "@com_github_maxence_charriere_go_app_v10//pkg/app",
     ],
 )
 
