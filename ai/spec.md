@@ -55,3 +55,10 @@ This file documents the iterative requests and modifications made to initialize 
 - **Actions Taken:**
   - Replaced all imports and build references of `go-app/v9` with `go-app/v10`.
   - Adjusted `app.Route` calls to use the factory function signature introduced in v10.
+## Embedfs Static Asset Packaging
+- **Request:** Use embedfs to include the files into the server app without the need to serve other resources but the binary.
+- **Actions Taken:**
+  - Modified `server/BUILD.bazel` to include a `genrule` that copies `//wasm`, `//static:icon`, and `//static:favicon` into a local `web/` directory during compilation.
+  - Employed `//go:embed web/*` in `server/main.go` to bundle the assets natively via `embed.FS`.
+  - Adjusted the `go-app` HTTP routing to serve the embedded files directly via `http.FileServer(http.FS(webAssets))`.
+  - Removed command-line asset path flags, streamlining server execution and tests.
