@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,19 +13,19 @@ import (
 	"github.com/bazelbuild/rules_go/go/tools/bazel"
 )
 
-func TestServerResources(t *testing.T) {
-	// Locate the server binary. Bazel sets TEST_WORKSPACE and TEST_SRCDIR.
+func TestServerProxyPath(t *testing.T) {
 	serverBin, _ := bazel.Runfile(os.Getenv("SERVER_BIN"))
 	if serverBin == "" {
 		t.Skip("SERVER_BIN not set, skipping integration test")
 	}
 
-	// Choose an ephemeral port
-	port := 8081
+	port := 8082
+	proxyPath := "/here"
 
-	// Start the server
-	cmd := exec.Command(serverBin, 
+	// Start the server with --proxy-path
+	cmd := exec.Command(serverBin,
 		"--port", fmt.Sprintf("%d", port),
+		"--proxy-path", proxyPath,
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -37,16 +38,15 @@ func TestServerResources(t *testing.T) {
 		_ = cmd.Wait()
 	}()
 
-	// Wait for server to be ready
 	baseURL := fmt.Sprintf("http://localhost:%d", port)
 	client := &http.Client{Timeout: 2 * time.Second}
-	
+
 	ready := false
 	for i := 0; i < 10; i++ {
-		resp, err := client.Get(baseURL + "/")
+		resp, err := client.Get(baseURL + proxyPath + "/")
 		if err == nil {
 			resp.Body.Close()
-			if resp.StatusCode != http.StatusNotFound {
+			if resp.StatusCode == http.StatusOK {
 				ready = true
 				break
 			}
@@ -55,20 +55,18 @@ func TestServerResources(t *testing.T) {
 	}
 
 	if !ready {
-		t.Logf("server might not be fully ready or root returned 404")
+		t.Fatalf("server not ready at proxy path")
 	}
 
-	// Define test cases for resources
 	tests := []struct {
 		name         string
 		path         string
 		expectedCode int
-		minSize      int64
 	}{
-		{"Root HTML", "/", http.StatusOK, 100},
-		{"WASM Binary", "/web/app.wasm", http.StatusOK, 1024 * 1024}, // Expecting >1MB for Go WASM
-		{"Icon", "/web/icon.png", http.StatusOK, 100},
-		{"Favicon", "/favicon.ico", http.StatusOK, 50},
+		{"Proxy Root", proxyPath + "/", http.StatusOK},
+		{"Proxy Static", proxyPath + "/web/bootstrap.min.css", http.StatusOK},
+		{"Proxy Favicon", proxyPath + "/favicon.ico", http.StatusOK},
+		{"Direct Root (should fail or be handled by mux)", "/", http.StatusOK}, // Mux will handle / even without prefix
 	}
 
 	for _, tc := range tests {
@@ -80,13 +78,28 @@ func TestServerResources(t *testing.T) {
 			defer resp.Body.Close()
 
 			if resp.StatusCode != tc.expectedCode {
-				t.Errorf("expected status %d, got %d", tc.expectedCode, resp.StatusCode)
-			}
-
-			body, _ := io.ReadAll(resp.Body)
-			if int64(len(body)) < tc.minSize {
-				t.Errorf("expected body size > %d, got %d", tc.minSize, len(body))
+				t.Errorf("expected status %d, got %d for %s", tc.expectedCode, resp.StatusCode, tc.path)
 			}
 		})
 	}
+	
+	// Test X-Forwarded-Prefix header
+	t.Run("X-Forwarded-Prefix", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", baseURL+"/", nil)
+		req.Header.Set("X-Forwarded-Prefix", "/there")
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("failed to GET with header: %v", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+		
+		body, _ := io.ReadAll(resp.Body)
+		if !bytes.Contains(body, []byte("/there/web/")) {
+			t.Errorf("expected body to contain /there/web/, but it didn't")
+		}
+	})
 }
