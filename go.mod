@@ -3,7 +3,7 @@ module github.com/filmil/bazel-wasm-demo
 go 1.26.2
 
 require (
-	github.com/bazelbuild/rules_go v0.59.0
+	github.com/bazelbuild/rules_go v0.60.0
 	github.com/golang/glog v1.2.5
 	github.com/maxence-charriere/go-app/v10 v10.1.11
 	google.golang.org/grpc v1.71.0

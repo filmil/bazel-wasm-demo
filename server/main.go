@@ -19,8 +19,7 @@ import (
 var webAssets embed.FS
 
 var (
-	port      = flag.Int("port", 8080, "default port to use")
-	proxyPath = flag.String("proxy-path", "", "The path prefix to use when served behind a proxy")
+	port = flag.Int("port", 8080, "default port to use")
 )
 
 type server struct{}
@@ -39,14 +38,6 @@ func main() {
 
 	// Register the root route.
 	app.Route("/", func() app.Composer { return &ui.Hello{} })
-	
-	// If a proxy path is set via flag, also register it.
-	// This helps with SSR when the prefix is not stripped by a global handler.
-	if *proxyPath != "" {
-		prefix := "/" + strings.Trim(*proxyPath, "/")
-		app.Route(prefix, func() app.Composer { return &ui.Hello{} })
-		app.Route(prefix+"/", func() app.Composer { return &ui.Hello{} })
-	}
 
 	appHandler := &app.Handler{
 		Name:        "Hello WASM",
@@ -80,10 +71,7 @@ func main() {
 
 	// Use a dynamic app handler that responds to the prefix.
 	dynamicAppHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		prefix := *proxyPath
-		if prefix == "" {
-			prefix = r.Header.Get("X-Forwarded-Prefix")
-		}
+		prefix := r.Header.Get("X-Forwarded-Prefix")
 		if prefix == "" {
 			appHandler.ServeHTTP(w, r)
 			return
@@ -100,16 +88,10 @@ func main() {
 	mux.Handle("/", dynamicAppHandler)
 
 	glog.Infof("Listening on http://localhost:%v", *port)
-	if *proxyPath != "" {
-		glog.Infof("Proxy path set to: %s", *proxyPath)
-	}
 
 	// The global proxy handler handles path stripping.
 	globalHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		prefix := *proxyPath
-		if prefix == "" {
-			prefix = r.Header.Get("X-Forwarded-Prefix")
-		}
+		prefix := r.Header.Get("X-Forwarded-Prefix")
 		if prefix != "" {
 			prefix = "/" + strings.Trim(prefix, "/")
 			if strings.HasPrefix(r.URL.Path, prefix) {

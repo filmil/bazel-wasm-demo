@@ -17,6 +17,8 @@ mandates and workflows.
   - Test: `bazel test //...`
 - **DO NOT** downgrade dependencies. If a downgrade is needed, stop and ask the
   user for permission.
+- To manipulate bazel BUILD files with buildozer, use `bazel run @buildozer --
+  ARGS`
 
 
 ## Source control guidance
