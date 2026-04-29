@@ -84,3 +84,10 @@ This file documents the iterative requests and modifications made to initialize 
   - Implemented a custom `flag_to_file` starlark rule in `server/flag.bzl` to securely write string build settings to a file.
   - Added a `--//server:registry` bazel flag with a default of `docker.io/filipfilmar/wasm-demo`.
   - Connected the generated flag file to the `repository_file` attribute of an `oci_push` rule (`//server:push`), enabling dynamically configured image pushing.
+
+## Proxy Path Reload Fix
+- **Request:** Fix the issue where setting a non-empty proxy path causes reloading to always forward to '/'.
+- **Actions Taken:**
+  - Modified `wasm/main.go` to read the `GOAPP_PROXY_PATH` environment variable and register additional routes for the prefixed path (e.g., `/here` and `/here/`) to prevent `go-app` from redirecting to `/` when it doesn't find a match for the current browser URL.
+  - Updated `server/main.go` to also register these prefixed routes when the `--proxy-path` flag is provided, ensuring consistency between server-side rendering and client-side routing.
+  - Verified that static assets and internal `go-app` resources continue to be correctly resolved via the existing `app.PrefixedLocation` logic.

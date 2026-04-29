@@ -37,7 +37,16 @@ func (s *server) SayHello(ctx context.Context, in *api.HelloRequest) (*api.Hello
 func main() {
 	flag.Parse()
 
+	// Register the root route.
 	app.Route("/", func() app.Composer { return &ui.Hello{} })
+	
+	// If a proxy path is set via flag, also register it.
+	// This helps with SSR when the prefix is not stripped by a global handler.
+	if *proxyPath != "" {
+		prefix := "/" + strings.Trim(*proxyPath, "/")
+		app.Route(prefix, func() app.Composer { return &ui.Hello{} })
+		app.Route(prefix+"/", func() app.Composer { return &ui.Hello{} })
+	}
 
 	appHandler := &app.Handler{
 		Name:        "Hello WASM",
@@ -68,7 +77,7 @@ func main() {
 	})
 
 	api.RegisterGreeterHTTPMux(mux, &server{})
-	
+
 	// Use a dynamic app handler that responds to the prefix.
 	dynamicAppHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		prefix := *proxyPath
