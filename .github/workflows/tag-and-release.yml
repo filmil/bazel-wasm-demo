@@ -24,14 +24,14 @@ jobs:
     outputs:
       tag_name: ${{ steps.tag_version.outputs.new_tag }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup bazel
         uses: bazel-contrib/setup-bazel@0.19.0
         with:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
           repository-cache: true
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Cache
         uses: actions/cache@v4
         with:
@@ -101,14 +101,14 @@ jobs:
         arch: ["386", "amd64"]
         os: ["linux"]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup bazel
         uses: bazel-contrib/setup-bazel@0.19.0
         with:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
           repository-cache: true
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Cache
         uses: actions/cache@v4
         with:
