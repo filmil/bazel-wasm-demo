@@ -20,6 +20,7 @@ var webAssets embed.FS
 
 var (
 	port = flag.Int("port", 8080, "default port to use")
+	host = flag.String("host", "", "default host to use")
 )
 
 type server struct{}
@@ -87,7 +88,7 @@ func main() {
 	})
 	mux.Handle("/", dynamicAppHandler)
 
-	glog.Infof("Listening on http://localhost:%v", *port)
+	glog.Infof("Listening on http://%v:%v", *host, *port)
 
 	// The global proxy handler handles path stripping.
 	globalHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +103,7 @@ func main() {
 		mux.ServeHTTP(w, r)
 	})
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%v", *port), globalHandler); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("%v:%v", *host, *port), globalHandler); err != nil {
 		glog.Errorf("failed to serve: %v", err)
 		os.Exit(1)
 	}
