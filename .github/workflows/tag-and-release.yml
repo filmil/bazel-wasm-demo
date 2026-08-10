@@ -48,6 +48,11 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main
           dry_run: true
+          # Without this the action always proposes a patch bump, even with no
+          # new commit. The guard on the next step then never fires, and the
+          # workflow rewrites MODULE.bazel and pushes a chore commit every
+          # month for no reason.
+          default_bump: false
       - name: Update MODULE.bazel version
         id: update_module
         if: steps.next_tag.outputs.new_tag != ''
@@ -69,24 +74,33 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main
           commit_sha: ${{ steps.update_module.outputs.new_sha }}
+          # Same reason as the step above: without this the action tags a new
+          # version on every run, even when no commit landed since the last
+          # tag. v0.2.2 and v0.2.3 came from such a run.
+          default_bump: false
       - name: Create a GitHub release
+        if: ${{ steps.tag_version.outputs.new_tag != '' }}
         uses: ncipollo/release-action@v1.14.0
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           generateReleaseNotes: true
       - name: Get release tag
+        if: ${{ steps.tag_version.outputs.new_tag != '' }}
         id: get_version
         run: echo "VERSION=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_ENV
       - name: Get repo name
+        if: ${{ steps.tag_version.outputs.new_tag != '' }}
         id: get_repo_name
         run: echo "REPO_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
       - name: "Publish source archive"
+        if: ${{ steps.tag_version.outputs.new_tag != '' }}
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
           filename: "${{ env.REPO_NAME }}-${{ env.VERSION }}.zip"
           exclusions: '*.git* /*node_modules/* .editorconfig /bazel-*'
       - name: "Upload source archive"
+        if: ${{ steps.tag_version.outputs.new_tag != '' }}
         uses: ncipollo/release-action@v1.14.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -95,8 +109,10 @@ jobs:
           allowUpdates: true
           artifacts: "${{ env.REPO_NAME }}-${{ env.VERSION }}.zip"
 
+  # Builds the binaries. It runs only when the tag job made a new tag.
   release:
     needs: tag
+    if: ${{ needs.tag.outputs.tag_name != '' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
