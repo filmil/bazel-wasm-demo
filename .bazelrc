@@ -12,6 +12,13 @@ common --host_per_file_copt=external/.*protobuf.*@--PROTOBUF_WAS_NOT_SUPPOSED_TO
 common --per_file_copt=external/.*grpc.*@--GRPC_WAS_NOT_SUPPOSED_TO_BE_BUILT
 common --host_per_file_copt=external/.*grpc.*@--GRPC_WAS_NOT_SUPPOSED_TO_BE_BUILT
 
+# The hermetic clang from toolchains_llvm defaults to PIE, but the Go linker
+# emits a non-PIC object for external linking, so ld.lld rejects it with
+# "relocation R_X86_64_64 cannot be used against symbol ...; recompile with
+# -fPIC". Link Go binaries as non-PIE instead.
+build --linkopt=-no-pie
+build --host_linkopt=-no-pie
+
 
 # Add your local user settings to file `user.bazelrc`
 try-import %workspace%/user.bazelrc
