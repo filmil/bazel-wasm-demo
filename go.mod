@@ -1,6 +1,6 @@
 module github.com/filmil/bazel-wasm-demo
 
-go 1.26.2
+go 1.26.10
 
 require (
 	github.com/bazelbuild/rules_go v0.60.0
